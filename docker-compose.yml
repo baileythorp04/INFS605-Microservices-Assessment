@@ -1,0 +1,85 @@
+services:
+  student-db:
+    image: postgres:15
+    container_name: student-db
+    environment:
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: students
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql #seeding
+      - student_data:/var/lib/postgresql/data # persistent storage
+    networks:
+      - microservices-net
+
+  student-profile:
+    build: ./student-profile
+    container_name: student-profile
+    environment:
+    # DATABASE_URL: postgresql://[user]:[password]@[container-name]:[port]/[database]
+    # from database environment variables
+      DATABASE_URL: postgresql://student:password@student-db:5432/students
+      FLASK_ENV: development
+    depends_on:
+      - student-db
+    ports:
+      - "5001:5001"
+    networks:
+      - microservices-net
+
+  catalog-db:
+    image: postgres:15
+    container_name: catalog-db
+    environment:
+      POSTGRES_USER: catalog
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: catalog
+    ports:
+      - "5433:5433"
+    volumes:
+      - ./postgres/init2.sql:/docker-entrypoint-initdb.d/init2.sql
+      - catalog_data:/var/lib/postgresql/data # persistent storage
+    networks:
+      - microservices-net
+
+
+  catalog-backend:
+    build: ./catalog-backend
+    container_name: catalog-backend
+    environment:
+    # DATABASE_URL: postgresql://[user]:[password]@[container-name]:[port]/[database]
+    # from database environment variables
+      DATABASE_URL: postgresql://catalog:password@catalog-db:5433/catalog
+      FLASK_ENV: development
+    depends_on:
+      - catalog-db
+    ports:
+      - "5002:5002"
+    networks:
+      - microservices-net
+
+
+  admin-frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    depends_on:
+      - student-profile
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  student_data:
+  catalog_data:

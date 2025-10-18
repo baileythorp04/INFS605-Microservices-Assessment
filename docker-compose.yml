@@ -39,7 +39,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./postgres/init2.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres/init2.sql:/docker-entrypoint-initdb.d/init.sql #seeding
       - catalog_data:/var/lib/postgresql/data # persistent storage
     networks:
       - microservices-net

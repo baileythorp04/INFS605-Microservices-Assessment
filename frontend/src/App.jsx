@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import './index.css' // Import the new CSS file
 
 const API = 'http://localhost:5001'
-const catalogAPI = 'http://localhost:5002'
+const CATALOG_API = 'http://localhost:5002'
 
 export default function App() {
   const [students, setStudents] = useState([])
@@ -77,7 +77,7 @@ export default function App() {
   /* #### Catalog API Access #### */
 
   const fetchCourses = () => {
-    fetch(`${API}/courses`)
+    fetch(`${CATALOG_API}/courses`)
       .then(r => r.json())
       .then(setCourses)
   }
@@ -151,7 +151,7 @@ export default function App() {
 
       {/* === Course List Section === */}
       <div className='horizontal-container'>
-        <h2>Catalog ({courses.length} courses)</h2>
+        <h2>Course Catalog ({courses.length} courses)</h2>
         <button onClick={toggleCatalogCollapse}>
           {catalogOpen ? 'Λ' : 'V'}
         </button>

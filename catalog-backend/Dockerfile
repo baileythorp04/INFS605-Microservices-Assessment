@@ -52,5 +52,4 @@ RUN chmod +x wait-for-it.sh
 # - We use the exec-form (JSON array) so the process receives signals directly.
 # - The wait-for-it script blocks until student-db:5432 is reachable,
 #   then runs the Python app (this prevents the app starting before DB is ready).
-CMD ["./wait-for-it.sh", "catalog-db", "5433", "python", "app.py"]
-#                                       5433 (host) or 5432 (internal)? 
+CMD ["./wait-for-it.sh", "catalog-db", "5432", "python", "app.py"]

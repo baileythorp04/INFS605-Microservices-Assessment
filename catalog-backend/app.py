@@ -54,11 +54,11 @@ def home():
     )
 
 @app.route("/courses", methods=["GET"])
-def get_students():
+def get_courses():
     """
-    Query the students table and return a JSON list of student objects.
+    Query the courses table and return a JSON list of course objects.
 
-    Each student object:
+    Each course object:
       { "id": int, "name": str, "code": str, "description": str }
 
     Notes:
@@ -78,7 +78,7 @@ def get_students():
 
     # Transform DB rows (tuples) into dictionaries for JSON serialization.
     courses = [
-        {"id": r[0], "name": r[1], "code": r[2], "description": r[3] or []}
+        {"id": r[0], "name": r[1], "code": r[2], "description": r[3]}
         for r in rows
     ]
     return jsonify(courses), 200

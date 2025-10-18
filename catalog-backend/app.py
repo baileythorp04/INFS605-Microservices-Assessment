@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)  
 
 DATABASE_URL = os.getenv(
-    #why does this need to be in here twice? its the same here as in docker-compose
+    #the second link typed here is the default value.
     "DATABASE_URL",
     "postgresql://catalog:password@catalog-db:5432/catalog"
 )

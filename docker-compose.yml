@@ -39,7 +39,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./postgres/init2.sql:/docker-entrypoint-initdb.d/init2.sql
+      - ./postgres/init2.sql:/docker-entrypoint-initdb.d/init.sql
       - catalog_data:/var/lib/postgresql/data # persistent storage
     networks:
       - microservices-net
@@ -75,6 +75,19 @@ services:
       - student-profile
     networks:
       - microservices-net
+  
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 9090:8080
+    depends_on:
+      - student-db
+      - catalog-db
+    networks:
+      - microservices-net
+
 
 networks:
   microservices-net:

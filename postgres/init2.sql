@@ -1,9 +1,3 @@
--- REM: *******************************************************************
--- REM: ***** Assignment 2: INFS605 Microservices Programming Project *****
--- REM: *******************************************************************
--- REM: * Purpose: Creating the PostGres SQL code needed to create the tables for the database*
--- REM: * Stephen Thorpe 9301663 *
--- REM: * Version: 1.7 (Sunday 24 August 2025) *
 
 CREATE TABLE IF NOT EXISTS courses (
     id SERIAL PRIMARY KEY,

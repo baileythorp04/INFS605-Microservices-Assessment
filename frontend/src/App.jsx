@@ -11,6 +11,8 @@ export default function App() {
   const [attDate, setAttDate] = useState('')
   const [attStatus, setAttStatus] = useState('Present')
 
+  const [studentsOpen, setStudentsOpen] = useState(false)
+
   const fetchStudents = () => {
     fetch(`${API}/students`)
       .then(r => r.json())
@@ -53,6 +55,10 @@ export default function App() {
     s.email.toLowerCase().includes(search.toLowerCase())
   ), [students, search])
 
+  const toggleCollapse = () => {
+    setStudentsOpen(!studentsOpen)
+  }
+
   return (
     <div className="container">
       <h1>Admin Portal</h1>
@@ -74,8 +80,13 @@ export default function App() {
       </section>
 
       {/* === Student List Section === */}
-      <h2>Students ({filtered.length})</h2>
-      <div className="grid-gap">
+      <div className='horizontal-container'>
+        <h2>Students ({filtered.length})</h2>
+        <button onClick={toggleCollapse}>
+          {studentsOpen ? 'Λ' : 'V'}
+        </button>
+      </div>
+      {studentsOpen && <div className="grid-gap">
         {filtered.map(s => (
           <div key={s.id} className="grid-row">
             <div>
@@ -107,7 +118,7 @@ export default function App() {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
     </div>
   )
 }

@@ -1,3 +1,0 @@
-currently postgres only works over port 5432, so only student-db can connect.
-catalog-db and catalog-backend both work, but cant connect over 5433
-However, even when changed to 5432, catalog-backend closes itself after connecting

@@ -37,7 +37,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: catalog
     ports:
-      - "5433:5433"
+      - "5433:5432"
     volumes:
       - ./postgres/init2.sql:/docker-entrypoint-initdb.d/init2.sql
       - catalog_data:/var/lib/postgresql/data # persistent storage
@@ -51,7 +51,7 @@ services:
     environment:
     # DATABASE_URL: postgresql://[user]:[password]@[container-name]:[port]/[database]
     # from database environment variables
-      DATABASE_URL: postgresql://catalog:password@catalog-db:5433/catalog
+      DATABASE_URL: postgresql://catalog:password@catalog-db:5432/catalog
       FLASK_ENV: development
     depends_on:
       - catalog-db

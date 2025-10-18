@@ -12,7 +12,7 @@ CORS(app)
 DATABASE_URL = os.getenv(
     #why does this need to be in here twice? its the same here as in docker-compose
     "DATABASE_URL",
-    "postgresql://catalog:password@catalog-db:5433/catalog"
+    "postgresql://catalog:password@catalog-db:5432/catalog"
 )
 
 

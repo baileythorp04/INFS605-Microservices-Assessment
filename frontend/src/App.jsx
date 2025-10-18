@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import './index.css' // Import the new CSS file
 
 const API = 'http://localhost:5001'
+const catalogAPI = 'http://localhost:5002'
 
 export default function App() {
   const [students, setStudents] = useState([])
@@ -12,6 +13,14 @@ export default function App() {
   const [attStatus, setAttStatus] = useState('Present')
 
   const [studentsOpen, setStudentsOpen] = useState(false)
+
+  const [courses, setCourses] = useState([])
+  const [catalogOpen, setCatalogOpen] = useState(false)
+
+
+
+
+  /* #### Student API Access #### */
 
   const fetchStudents = () => {
     fetch(`${API}/students`)
@@ -50,14 +59,31 @@ export default function App() {
     fetchStudents()
   }
 
-  const filtered = useMemo(() => students.filter(s =>
+  const filteredStudents = useMemo(() => students.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase()) ||
     s.email.toLowerCase().includes(search.toLowerCase())
   ), [students, search])
 
-  const toggleCollapse = () => {
+  const toggleStudentCollapse = () => {
     setStudentsOpen(!studentsOpen)
   }
+
+  const toggleCatalogCollapse = () => {
+    setCatalogOpen(!catalogOpen)
+  }
+
+
+
+  /* #### Catalog API Access #### */
+
+  const fetchCourses = () => {
+    fetch(`${API}/courses`)
+      .then(r => r.json())
+      .then(setCourses)
+  }
+
+  useEffect(() => { fetchCourses() }, [])
+
 
   return (
     <div className="container">
@@ -81,13 +107,13 @@ export default function App() {
 
       {/* === Student List Section === */}
       <div className='horizontal-container'>
-        <h2>Students ({filtered.length})</h2>
-        <button onClick={toggleCollapse}>
+        <h2>Students ({filteredStudents.length})</h2>
+        <button onClick={toggleStudentCollapse}>
           {studentsOpen ? 'Λ' : 'V'}
         </button>
       </div>
       {studentsOpen && <div className="grid-gap">
-        {filtered.map(s => (
+        {filteredStudents.map(s => (
           <div key={s.id} className="grid-row">
             <div>
               <div style={{ fontWeight: 'bold', color: '#212121' }}>{s.name}</div>
@@ -115,6 +141,32 @@ export default function App() {
                 <button className="btn-secondary" onClick={()=>addAttendance(s.id)}>Record</button>
               </div>
               <button className="btn-danger" onClick={()=>deleteStudent(s.id)}>Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>}
+
+
+
+
+      {/* === Course List Section === */}
+      <div className='horizontal-container'>
+        <h2>Catalog ({courses.length} courses)</h2>
+        <button onClick={toggleCatalogCollapse}>
+          {catalogOpen ? 'Λ' : 'V'}
+        </button>
+      </div>
+      {catalogOpen && <div className="grid-gap">
+        {courses.map(c => (
+          <div key={c.id} className="grid-row">
+            <div>
+              <div style={{ fontWeight: 'bold', color: '#212121' }}>{c.name}</div>
+              <div style={{ color: '#616161' }}>{c.code}</div>
+
+              <details>
+                <summary>Description</summary>
+                <p>{c.description}</p>
+              </details>
             </div>
           </div>
         ))}

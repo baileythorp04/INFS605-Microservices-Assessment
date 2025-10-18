@@ -53,6 +53,35 @@ def home():
         "This is a line of text to let you know that the API service is running smoothly and doesn't yet have CRUD capability"
     )
 
+@app.route("/courses", methods=["GET"])
+def get_students():
+    """
+    Query the students table and return a JSON list of student objects.
+
+    Each student object:
+      { "id": int, "name": str, "code": str, "description": str }
+
+    Notes:
+    - We ORDER BY id to provide predictable results for students learning/testing.
+    - attendance is stored in the DB as JSON (JSONB). We default to [] if null.
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Execute a SELECT query to retrieve the relevant columns.
+    cur.execute("SELECT id, name, code, description FROM courses ORDER BY id ASC")
+    rows = cur.fetchall()
+
+    # Close DB resources to avoid leaking connections.
+    cur.close()
+    conn.close()
+
+    # Transform DB rows (tuples) into dictionaries for JSON serialization.
+    courses = [
+        {"id": r[0], "name": r[1], "code": r[2], "description": r[3] or []}
+        for r in rows
+    ]
+    return jsonify(courses), 200
 
 
 

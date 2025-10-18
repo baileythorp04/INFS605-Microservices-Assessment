@@ -117,8 +117,6 @@ details summary {
 
 .horizontal-container {
   display: flex;
-  /* Optional: align items vertically in the center */
   align-items: center;
-  /* Optional: add space between the texts */
   gap: 10px; 
 }

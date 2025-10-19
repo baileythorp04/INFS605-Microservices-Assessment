@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import './index.css' // Import the new CSS file
 
-const API = 'http://localhost:5001'
+const STUDENTS_API = 'http://localhost:5001'
 const CATALOG_API = 'http://localhost:5002'
+const FEEDBACK_API = 'http://localhost:5003'
 
 export default function App() {
   const [students, setStudents] = useState([])
@@ -23,7 +24,7 @@ export default function App() {
   /* #### Student API Access #### */
 
   const fetchStudents = () => {
-    fetch(`${API}/students`)
+    fetch(`${STUDENTS_API}/students`)
       .then(r => r.json())
       .then(setStudents)
   }
@@ -32,7 +33,7 @@ export default function App() {
 
   const addStudent = async () => {
     if (!name || !email) return
-    const res = await fetch(`${API}/students`, {
+    const res = await fetch(`${STUDENTS_API}/students`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ name, email })
@@ -44,13 +45,13 @@ export default function App() {
   }
 
   const deleteStudent = async (id) => {
-    await fetch(`${API}/students/${id}`, { method: 'DELETE' })
+    await fetch(`${STUDENTS_API}/students/${id}`, { method: 'DELETE' })
     fetchStudents()
   }
 
   const addAttendance = async (id) => {
     if (!attDate) return
-    await fetch(`${API}/students/${id}/attendance`, {
+    await fetch(`${STUDENTS_API}/students/${id}/attendance`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ date: attDate, status: attStatus })

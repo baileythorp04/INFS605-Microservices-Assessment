@@ -59,6 +59,38 @@ services:
       - "5002:5002"
     networks:
       - microservices-net
+  
+  
+  feedback-db:
+    image: postgres:15
+    container_name: feedback-db
+    environment:
+      POSTGRES_USER: feedback
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: feedback
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./feedback-backend/init.sql:/docker-entrypoint-initdb.d/init.sql #seeding
+      - feedback_data:/var/lib/postgresql/data # persistent storage
+    networks:
+      - microservices-net
+
+
+  feedback-backend:
+    build: ./feedback-backend
+    container_name: feedback-backend
+    environment:
+    # DATABASE_URL: postgresql://[user]:[password]@[container-name]:[port]/[database]
+    # from database environment variables
+      DATABASE_URL: postgresql://feedback:password@feedback-db:5432/feedback
+      FLASK_ENV: development
+    depends_on:
+      - feedback-db
+    ports:
+      - "5003:5003"
+    networks:
+      - microservices-net
 
 
   admin-frontend:
@@ -76,6 +108,8 @@ services:
     networks:
       - microservices-net
   
+
+  
   adminer:
     image: adminer
     container_name: adminer
@@ -85,6 +119,7 @@ services:
     depends_on:
       - student-db
       - catalog-db
+      - feedback-db
     networks:
       - microservices-net
 
@@ -96,3 +131,4 @@ networks:
 volumes:
   student_data:
   catalog_data:
+  feedback_data:

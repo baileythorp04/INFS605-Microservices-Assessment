@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql #seeding
+      - ./student-profile/init.sql:/docker-entrypoint-initdb.d/init.sql #seeding
       - student_data:/var/lib/postgresql/data # persistent storage
     networks:
       - microservices-net
@@ -39,7 +39,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./postgres/init2.sql:/docker-entrypoint-initdb.d/init.sql #seeding
+      - ./catalog-backend/init.sql:/docker-entrypoint-initdb.d/init.sql #seeding
       - catalog_data:/var/lib/postgresql/data # persistent storage
     networks:
       - microservices-net

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS courses (
 );
 
 INSERT INTO courses (name, code, description) VALUES
+('from catalog folder', 'FCF404', 'No description given'),
 ('Programming', 'PRG101', 'No description given'),
 ('English', 'ENG201', 'No description given'),
 ('course 3', 'CRS3', 'No description given'),

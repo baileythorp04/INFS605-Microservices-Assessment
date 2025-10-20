@@ -59,7 +59,7 @@ def get_feedback():
     Query the courses table and return a JSON list of course objects.
 
     Each feedback object:
-      { "id": int, "student_name": str, "text": str }
+      { "id": int, "student_name": str, "text": str, "reply" : str, "feedback_state" : str }
 
     Notes:
     - We ORDER BY id to provide predictable results for students learning/testing.
@@ -69,7 +69,7 @@ def get_feedback():
     cur = conn.cursor()
 
     # Execute a SELECT query to retrieve the relevant columns.
-    cur.execute("SELECT id, student_name, text FROM feedback ORDER BY id ASC")
+    cur.execute("SELECT id, student_name, text, reply, feedback_status FROM feedback ORDER BY id ASC")
     rows = cur.fetchall()
 
     # Close DB resources to avoid leaking connections.
@@ -78,11 +78,39 @@ def get_feedback():
 
     # Transform DB rows (tuples) into dictionaries for JSON serialization.
     feedback = [
-        {"id": r[0], "student_name": r[1], "text": r[2]}
+        {"id": r[0], "student_name": r[1], "text": r[2], "reply": r[3], "feedback_status": r[4]}
         for r in rows
     ]
     return jsonify(feedback), 200
 
+@app.route("/feedback/<int:feedback_id>/reply", methods=["POST"])
+def respond_feedback(feedback_id):
+
+    data = request.get_json() or {}
+
+    if "reply" not in data :
+        return jsonify({"error": "reply is required"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT reply FROM feedback WHERE id=%s", (feedback_id,))
+    row = cur.fetchone()
+
+    if not row:
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Feedback not found"}), 404
+
+    reply = data["reply"]
+
+    cur.execute("UPDATE feedback SET reply=%s, feedback_status=%s WHERE id=%s", (reply, 'replied', feedback_id))
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return jsonify({"id": feedback_id, "reply": reply}), 200
 
 
 # -----------------------------

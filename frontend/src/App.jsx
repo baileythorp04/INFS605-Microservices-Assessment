@@ -23,8 +23,11 @@ export default function App() {
 
   /* Feedback variables */
   const [feedback, setFeedback] = useState([])
+
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
+  const [replyText, setReplyText] = useState('')
+  const [replyId, setReplyId] = useState(-1)
 
 
 
@@ -93,17 +96,42 @@ export default function App() {
       .then(setCourses)
   }
 
+  
+  
+
   useEffect(() => { fetchCourses() }, [])
 
-  /* #### Catalog API Access #### */
+  /* #### Feedback API Access #### */
 
   const fetchFeedback = () => {
+    console.log("fetched")
+
     fetch(`${FEEDBACK_API}/feedback`)
       .then(r => r.json())
       .then(setFeedback)
   }
 
+  const makeReply = async (id) => {
+    console.log("reply button pressed")
+    if (!replyText) return
+    const res = await fetch(`${FEEDBACK_API}/feedback/${id}/reply`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ reply: replyText })
+    })
+    if (res.ok) {
+      setReplyId(-1)
+      fetchFeedback()
+    }
+  }
+
+  const newFeedback = useMemo(() => feedback.filter(f =>
+    f.feedback_status == 'open'), [feedback])
+  const oldFeedback = useMemo(() => feedback.filter(f =>
+    ['replied', 'resolved'].includes(f.feedback_status)), [feedback])
+
   useEffect(() => { fetchFeedback() }, [])
+  useEffect(() => { setReplyText('') }, [replyId])
 
 
 
@@ -152,7 +180,7 @@ export default function App() {
             </div>
 
             <div className="justify-end">
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div className="horizontal-container">
                 <input type="date" value={attDate} onChange={e=>setAttDate(e.target.value)} />
                 <select value={attStatus} onChange={e=>setAttStatus(e.target.value)}>
                   <option>Present</option>
@@ -174,9 +202,11 @@ export default function App() {
       {/* === Course List Section === */}
       <div className='horizontal-container'>
         <h2>Course Catalog ({courses.length} courses)</h2>
+      <div className="justify-end">
         <button onClick={toggleCatalogCollapse}>
           {catalogOpen ? 'Λ' : 'V'}
         </button>
+      </div>
       </div>
       {catalogOpen && <div className="grid-gap">
         {courses.map(c => (
@@ -206,9 +236,26 @@ export default function App() {
         {feedback.map(f => (
           <div key={f.id} className="grid-row">
             <div>
-              <div style={{ fontWeight: 'bold', color: '#212121' }}>{f.student_name}</div>
+              <div style={{ fontWeight: 'bold', color: '#212121' }}>Feedback from {f.student_name}:</div>
               <div style={{ color: '#616161' }}>{f.text}</div>
             </div>
+
+            <div className="justify-end">
+              <div className='horizontal-container'>
+                {replyId == f.id && <textarea onChange={(e) => setReplyText(e.target.value)} cols='50' placeholder='Type reply here...'></textarea>}
+                {replyId == f.id && <button onClick={() => makeReply(f.id)}>Send Reply</button>}
+                {replyId != f.id && <button onClick={() => setReplyId(f.id)}>Reply</button>}
+                <button>Mark as Resolved</button>
+              </div>
+              <button>Discard</button>
+              </div>
+
+              {f.feedback_status == 'replied' &&
+              <div>
+                <div style={{ textDecoration: 'underline', color: '#212121' }}>Reply:</div>
+                <div style={{ color: '#616161' }}>{f.reply}</div>
+              </div>}
+
           </div>
         ))}
       </div>}

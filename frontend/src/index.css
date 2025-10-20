@@ -118,5 +118,5 @@ details summary {
 .horizontal-container {
   display: flex;
   align-items: center;
-  gap: 10px; 
+  gap: 8px; 
 }

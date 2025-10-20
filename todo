@@ -1,3 +1,6 @@
 renamed all instances of 'catalog' to 'courses' ?
+
 search courses by code or by name (or otherwise expose more endpoints)
 have feedback be on a different page (react routing, or a new frontend)
+
+have more endpoints for feedback

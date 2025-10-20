@@ -6,6 +6,8 @@ const CATALOG_API = 'http://localhost:5002'
 const FEEDBACK_API = 'http://localhost:5003'
 
 export default function App() {
+
+  /* Student variables */
   const [students, setStudents] = useState([])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -15,8 +17,13 @@ export default function App() {
 
   const [studentsOpen, setStudentsOpen] = useState(false)
 
+  /* Course variables */
   const [courses, setCourses] = useState([])
   const [catalogOpen, setCatalogOpen] = useState(false)
+
+  /* Feedback variables */
+  const [feedback, setFeedback] = useState([])
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
 
 
@@ -73,6 +80,9 @@ export default function App() {
     setCatalogOpen(!catalogOpen)
   }
 
+    const toggleFeedbackCollapse = () => {
+    setFeedbackOpen(!feedbackOpen)
+  }
 
 
   /* #### Catalog API Access #### */
@@ -84,6 +94,17 @@ export default function App() {
   }
 
   useEffect(() => { fetchCourses() }, [])
+
+  /* #### Catalog API Access #### */
+
+  const fetchFeedback = () => {
+    fetch(`${FEEDBACK_API}/feedback`)
+      .then(r => r.json())
+      .then(setFeedback)
+  }
+
+  useEffect(() => { fetchFeedback() }, [])
+
 
 
   return (
@@ -168,6 +189,25 @@ export default function App() {
                 <summary>Description</summary>
                 <p>{c.description}</p>
               </details>
+            </div>
+          </div>
+        ))}
+      </div>}
+
+
+    {/* === Feedback List Section === */}
+      <div className='horizontal-container'>
+        <h2>Feedback List ({feedback.length})</h2>
+        <button onClick={toggleFeedbackCollapse}>
+          {feedbackOpen ? 'Λ' : 'V'}
+        </button>
+      </div>
+      {feedbackOpen && <div className="grid-gap">
+        {feedback.map(f => (
+          <div key={f.id} className="grid-row">
+            <div>
+              <div style={{ fontWeight: 'bold', color: '#212121' }}>{f.student_name}</div>
+              <div style={{ color: '#616161' }}>{f.text}</div>
             </div>
           </div>
         ))}

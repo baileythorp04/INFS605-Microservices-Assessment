@@ -53,13 +53,13 @@ def home():
         "This is a line of text to let you know that the API service is running smoothly"
     )
 
-@app.route("/courses", methods=["GET"])
-def get_courses():
+@app.route("/feedback", methods=["GET"])
+def get_feedback():
     """
     Query the courses table and return a JSON list of course objects.
 
-    Each course object:
-      { "id": int, "name": str, "code": str, "description": str }
+    Each feedback object:
+      { "id": int, "student_name": str, "text": str }
 
     Notes:
     - We ORDER BY id to provide predictable results for students learning/testing.
@@ -69,7 +69,7 @@ def get_courses():
     cur = conn.cursor()
 
     # Execute a SELECT query to retrieve the relevant columns.
-    cur.execute("SELECT id, name, code, description FROM courses ORDER BY id ASC")
+    cur.execute("SELECT id, student_name, text FROM feedback ORDER BY id ASC")
     rows = cur.fetchall()
 
     # Close DB resources to avoid leaking connections.
@@ -77,11 +77,11 @@ def get_courses():
     conn.close()
 
     # Transform DB rows (tuples) into dictionaries for JSON serialization.
-    courses = [
-        {"id": r[0], "name": r[1], "code": r[2], "description": r[3]}
+    feedback = [
+        {"id": r[0], "student_name": r[1], "text": r[2]}
         for r in rows
     ]
-    return jsonify(courses), 200
+    return jsonify(feedback), 200
 
 
 
@@ -94,4 +94,4 @@ if __name__ == "__main__":
     In production (inside Docker), use a real WSGI server like gunicorn for stability:
       gunicorn -w 4 -b 0.0.0.0:5001 app:app
     """
-    app.run(host="0.0.0.0", port=5002, debug=True)
+    app.run(host="0.0.0.0", port=5003, debug=True)

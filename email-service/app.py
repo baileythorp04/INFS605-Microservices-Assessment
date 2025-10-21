@@ -91,8 +91,8 @@ def send_feedback_email():
 
 @app.route("/email/reply", methods=["POST"])
 def send_reply_email():
-    data = request.get_json() or {}
 
+    data = request.get_json() or {}
     if "recipient" not in data or "reply" not in data or "feedback" not in data:
         return jsonify({"error": "recipient, reply and feedback are required"}), 400
     
@@ -100,7 +100,6 @@ def send_reply_email():
     sender = "schooladmin@email.com"
     feedback = data['feedback']
     reply = data['reply']
-
 
     template = Template(
         'To: $recipient\n' \
@@ -116,12 +115,12 @@ def send_reply_email():
 
     email = template.substitute({'recipient': recipient, 'sender': sender, 'reply': reply, 'feedback': feedback})
         
-    print("Reply email successfully created. Sending...")
-    print(email)
 
     currenttime = datetime.datetime.now()
     
-    os.makedirs(OUT_DIR, exist_ok=True)
+    if not os.path.isdir(OUT_DIR):
+        os.makedirs(OUT_DIR, exist_ok=True)
+
     out_path = os.path.join(OUT_DIR, f"reply-{currenttime}.txt")
     try:
         with open(out_path, "a", encoding="utf-8") as fh:

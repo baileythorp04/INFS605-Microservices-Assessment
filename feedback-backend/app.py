@@ -15,7 +15,7 @@ DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://feedback:password@feedback-db:5432/feedback"
 )
-EMAIL_API = 'http://localhost:5004'
+EMAIL_API = 'http://email-service:5004'
 
 
 
@@ -124,7 +124,7 @@ def reply_feedback(feedback_id):
 
     url = f"{EMAIL_API}/email/reply"
     body = { "reply": reply, "recipient": recipient, "feedback": feedback }
-    #requests.post(url, json=body, timeout=5)
+    requests.post(url, json=body, timeout=5)
 
     return jsonify({"id": feedback_id, "reply": reply}), 200
 

@@ -113,6 +113,26 @@ def respond_feedback(feedback_id):
     return jsonify({"id": feedback_id, "reply": reply}), 200
 
 
+@app.route("/feedback/<int:feedback_id>", methods=["DELETE"])
+def delete_student(feedback_id):
+    """
+    Delete the student row and return a 200 message or 404 if the row did not exist.
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM feedback WHERE id=%s RETURNING id", (feedback_id,))
+    deleted = cur.fetchone()
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    if not deleted:
+        return jsonify({"error": "Student not found"}), 404
+
+    return jsonify({"message": "Deleted"}), 200
+
 # -----------------------------
 # Run the Flask dev server
 # -----------------------------

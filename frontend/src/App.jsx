@@ -111,6 +111,11 @@ export default function App() {
       .then(setFeedback)
   }
 
+  const deleteFeedback = async (id) => {
+    await fetch(`${FEEDBACK_API}/feedback/${id}`, { method: 'DELETE' })
+    fetchFeedback()
+  }
+
   const makeReply = async (id) => {
     console.log("reply button pressed")
     if (!replyText) return
@@ -233,7 +238,9 @@ export default function App() {
         </button>
       </div>
       {feedbackOpen && <div className="grid-gap">
-        {feedback.map(f => (
+
+        <h3>Open Feedback ({newFeedback.length}):</h3>
+        {newFeedback.map(f => (
           <div key={f.id} className="grid-row">
             <div>
               <div style={{ fontWeight: 'bold', color: '#212121' }}>Feedback from {f.student_name}:</div>
@@ -243,19 +250,39 @@ export default function App() {
             <div className="justify-end">
               <div className='horizontal-container'>
                 {replyId == f.id && <textarea onChange={(e) => setReplyText(e.target.value)} cols='50' placeholder='Type reply here...'></textarea>}
-                {replyId == f.id && <button onClick={() => makeReply(f.id)}>Send Reply</button>}
-                {replyId != f.id && <button onClick={() => setReplyId(f.id)}>Reply</button>}
-                <button>Mark as Resolved</button>
+                {replyId == f.id && <button onClick={() => makeReply(f.id)} className="btn-info">Send Reply</button>}
+                {replyId != f.id && <button onClick={() => setReplyId(f.id)} className="btn-info">Reply</button>}
+                <button className="btn-success">Mark as Resolved</button>
               </div>
-              <button>Discard</button>
-              </div>
+              <button className="btn-danger" onClick={() => deleteFeedback(f.id)} >Delete</button>
+            </div>
 
-              {f.feedback_status == 'replied' &&
-              <div>
-                <div style={{ textDecoration: 'underline', color: '#212121' }}>Reply:</div>
-                <div style={{ color: '#616161' }}>{f.reply}</div>
-              </div>}
+            {f.feedback_status == 'replied' &&
+            <div>
+              <div style={{ textDecoration: 'underline', color: '#212121' }}>Reply:</div>
+              <div style={{ color: '#616161' }}>{f.reply}</div>
+            </div>}
+          </div>
+        ))}
 
+
+        <h3>Closed Feedback ({oldFeedback.length}):</h3>
+        {oldFeedback.map(f => (
+          <div key={f.id} className="grid-row">
+            <div>
+              <div style={{ fontWeight: 'bold', color: '#212121' }}>Feedback from {f.student_name}:</div>
+              <div style={{ color: '#616161' }}>{f.text}</div>
+            </div>
+
+            <div className="justify-end">
+              <button className="btn-danger" onClick={() => deleteFeedback(f.id)} >Delete</button>
+            </div>
+
+            {f.feedback_status == 'replied' &&
+            <div>
+              <div style={{ textDecoration: 'underline', color: '#212121' }}>Reply:</div>
+              <div style={{ color: '#616161' }}>{f.reply}</div>
+            </div>}
           </div>
         ))}
       </div>}

@@ -25,6 +25,13 @@ h2 {
   color: #ff5722; /* primary */
 }
 
+h3 {
+  margin-top: 8;
+  margin-bottom: 0;
+  margin-left: 16px;
+  color: #ff5722; /* primary */
+}
+
 /* === Paragraphs === */
 p {
   opacity: 0.8;
@@ -105,6 +112,16 @@ button:hover {
 
 .btn-danger {
   background-color: #8b0019ff;
+  color: #fff;
+}
+
+.btn-info {
+  background-color: rgb(14, 167, 167);
+  color: #fff;
+}
+
+.btn-success {
+  background-color: rgb(13, 148, 43);
   color: #fff;
 }
 

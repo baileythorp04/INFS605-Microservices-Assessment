@@ -1,0 +1,6 @@
+To: schooladmin@email.com
+You have recieved feedback on your website from asde
+
+brand new feedbackt he third
+
+To reply to this feedback or to view other feedback, go to http://localhost:3000/

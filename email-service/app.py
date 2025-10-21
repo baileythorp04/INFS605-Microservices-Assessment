@@ -73,9 +73,9 @@ def send_feedback_email():
 
     template = Template(
         'To: $recipient\n' \
-        'You have recieved feedback on your website from $sender\n' \
+        'You have recieved feedback on your website from $sender:\n' \
         '\n' \
-        '$feedback\n' \
+        '"$feedback"\n' \
         '\n' \
         'To reply to this feedback or to view other feedback, go to http://localhost:3000/'
     )
@@ -85,7 +85,19 @@ def send_feedback_email():
 
 
 
-    return "Email sent", 200
+    currenttime = datetime.datetime.now()
+    
+    if not os.path.isdir(OUT_DIR):
+        os.makedirs(OUT_DIR, exist_ok=True)
+
+    out_path = os.path.join(OUT_DIR, f"feedback-{currenttime}.txt")
+    try:
+        with open(out_path, "a", encoding="utf-8") as fh:
+                fh.write(email)
+    except:
+        return jsonify({"error": "Failed to send email to file"}), 400
+
+    return jsonify({"email":email, "message": "Email sent to file"}), 200
 
 
 
@@ -105,12 +117,12 @@ def send_reply_email():
         'To: $recipient\n' \
         'You have recieved a reply to your feedback from $sender\n' \
         '\n' \
-        '$reply\n' \
+        '"$reply"\n' \
         '\n' \
         '\n' \
         'This was in response to your original feedback:\n' \
         '\n' \
-        '$feedback'
+        '"$feedback"'
     )
 
     email = template.substitute({'recipient': recipient, 'sender': sender, 'reply': reply, 'feedback': feedback})
@@ -126,7 +138,7 @@ def send_reply_email():
         with open(out_path, "a", encoding="utf-8") as fh:
                 fh.write(email)
     except:
-         return jsonify({"error": "Failed to send email to file"}), 400
+        return jsonify({"error": "Failed to send email to file"}), 400
 
     return jsonify({"email":email, "message": "Email sent to file"}), 200
 

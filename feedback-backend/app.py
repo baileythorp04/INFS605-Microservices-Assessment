@@ -111,6 +111,17 @@ def create_feedback():
     cur.close()
     conn.close()
 
+
+    #### calling email-service ####
+    sender = data["email"]
+    feedback = data["text"]
+
+
+    url = f"{EMAIL_API}/email/feedback"
+    body = { "sender": sender, "feedback": feedback }
+    requests.post(url, json=body, timeout=5)
+
+
     # Return the new resource with HTTP 201 "Created"
     return jsonify({
         "id": new_id,

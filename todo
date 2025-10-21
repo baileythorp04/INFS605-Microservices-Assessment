@@ -1,10 +1,6 @@
 
-move add/search student sections into the dropdown
 search courses by code or by name (or otherwise expose more endpoints)
-
-(maybe) have feedback be on a different page (react routing, or a new frontend)
-    at least have some way to create feedback
 
 notification system to send log upon:
     feedback recieved
-    feedback replied
+

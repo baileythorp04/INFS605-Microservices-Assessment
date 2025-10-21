@@ -91,6 +91,16 @@ services:
       - "5003:5003"
     networks:
       - microservices-net
+  
+  email-service:
+    build: ./email-service
+    container_name: email-service
+    environment:
+      FLASK_ENV: development
+    ports:
+      - "5004:5004"
+    networks:
+      - microservices-net
 
 
   admin-frontend:

@@ -143,7 +143,7 @@ export default function App() {
   return (
     <div className="container">
       <h1>Admin Portal</h1>
-      <p>Manage students, search, and record attendance.</p>
+      <p>Manage students, attendance, courses, and feedback.</p>
 
       {/* === Add Student + Search Section === */}
       <section className="grid-2">
@@ -252,7 +252,7 @@ export default function App() {
                 {replyId == f.id && <textarea onChange={(e) => setReplyText(e.target.value)} cols='50' placeholder='Type reply here...'></textarea>}
                 {replyId == f.id && <button onClick={() => makeReply(f.id)} className="btn-info">Send Reply</button>}
                 {replyId != f.id && <button onClick={() => setReplyId(f.id)} className="btn-info">Reply</button>}
-                <button className="btn-success">Mark as Resolved</button>
+                {/*<button className="btn-success">Mark as Resolved</button>*/}
               </div>
               <button className="btn-danger" onClick={() => deleteFeedback(f.id)} >Delete</button>
             </div>
@@ -280,7 +280,7 @@ export default function App() {
 
             {f.feedback_status == 'replied' &&
             <div>
-              <div style={{ textDecoration: 'underline', color: '#212121' }}>Reply:</div>
+              <div style={{ textDecoration: 'underline', color: '#212121', 'margin-top':'12px' }}>Reply:</div>
               <div style={{ color: '#616161' }}>{f.reply}</div>
             </div>}
           </div>

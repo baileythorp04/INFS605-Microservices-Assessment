@@ -1,10 +1,9 @@
-renamed all instances of 'catalog' to 'courses' ?
-
-search courses by code or by name (or otherwise expose more endpoints)
-
-(optional) have feedback be on a different page (react routing, or a new frontend)
 
 move add/search student sections into the dropdown
+search courses by code or by name (or otherwise expose more endpoints)
+
+(maybe) have feedback be on a different page (react routing, or a new frontend)
+    at least have some way to create feedback
 
 notification system to send log upon:
     feedback recieved

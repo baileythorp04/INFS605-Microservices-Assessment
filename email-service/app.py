@@ -36,10 +36,12 @@ import psycopg2                        # PostgreSQL client library
 import os
 import json
 import time
+import datetime
 
 app = Flask(__name__)
 CORS(app)  # permit Cross-Origin requests from the frontend during development
 
+OUT_DIR = os.getenv("EMAIL_OUT_DIR", "/out")
 
 # -----------------------------
 # Simple health endpoint
@@ -89,7 +91,6 @@ def send_feedback_email():
 
 @app.route("/email/reply", methods=["POST"])
 def send_reply_email():
-    
     data = request.get_json() or {}
 
     if "recipient" not in data or "reply" not in data or "feedback" not in data:
@@ -107,16 +108,28 @@ def send_reply_email():
         '\n' \
         '$reply\n' \
         '\n' \
+        '\n' \
         'This was in response to your original feedback:\n' \
+        '\n' \
         '$feedback'
     )
 
     email = template.substitute({'recipient': recipient, 'sender': sender, 'reply': reply, 'feedback': feedback})
         
+    print("Reply email successfully created. Sending...")
+    print(email)
 
+    currenttime = datetime.datetime.now()
+    
+    os.makedirs(OUT_DIR, exist_ok=True)
+    out_path = os.path.join(OUT_DIR, f"reply-{currenttime}.txt")
+    try:
+        with open(out_path, "a", encoding="utf-8") as fh:
+                fh.write(email)
+    except:
+         return jsonify({"error": "Failed to send email to file"}), 400
 
-
-    return "Email sent", 200
+    return jsonify({"email":email, "message": "Email sent to file"}), 200
 
 
 
@@ -129,4 +142,4 @@ if __name__ == "__main__":
     In production (inside Docker), use a real WSGI server like gunicorn for stability:
       gunicorn -w 4 -b 0.0.0.0:5001 app:app
     """
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5004, debug=True)

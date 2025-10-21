@@ -46,10 +46,11 @@ COPY . .
 # Make sure our helper script is executable.
 # wait-for-it.sh will be used to wait for the DB to accept connections.
 # (Ensure wait-for-it.sh has a proper shebang like #!/usr/bin/env bash)
-RUN chmod +x wait-for-it.sh
+#RUN chmod +x wait-for-it.sh
 
 # Command to run when the container starts.
 # - We use the exec-form (JSON array) so the process receives signals directly.
 # - The wait-for-it script blocks until student-db:5432 is reachable,
 #   then runs the Python app (this prevents the app starting before DB is ready).
-# CMD ["./wait-for-it.sh", "student-db", "5432", "python", "app.py"]
+#CMD ["./wait-for-it.sh", "student-db", "5432", "python", "app.py"]
+CMD ["python", "app.py"]

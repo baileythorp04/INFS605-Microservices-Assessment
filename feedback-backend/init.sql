@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS feedback (
     feedback_status VARCHAR(20) DEFAULT 'open' CHECK (feedback_status IN ('open','resolved','replied','discarded'))
 );
 
-INSERT INTO feedback (student_name, text) VALUES
+INSERT INTO feedback (student_name, email, text) VALUES
 ('John', 'John@email.com', 'I love this'),
 ('John2', 'John2@email.com', 'I like this'),
 ('John3', 'John3@email.com', 'I dislike this'),

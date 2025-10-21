@@ -5,6 +5,7 @@ import psycopg2
 import os
 import json
 import time
+import requests
 
 app = Flask(__name__)
 CORS(app)  
@@ -14,6 +15,8 @@ DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://feedback:password@feedback-db:5432/feedback"
 )
+EMAIL_API = 'http://localhost:5004'
+
 
 
 max_retries = 20
@@ -48,6 +51,7 @@ def home():
     Health check and human-readable message.
     Frontend or a human tester can hit this endpoint to confirm the service is running.
     """
+    print("basic test confirmed")
     return (
         "Hello. Feedback health check is good. "
         "This is a line of text to let you know that the API service is running smoothly"
@@ -59,7 +63,7 @@ def get_feedback():
     Query the courses table and return a JSON list of course objects.
 
     Each feedback object:
-      { "id": int, "student_name": str, "text": str, "reply" : str, "feedback_state" : str }
+      { "id": int, "student_name": str, "email: str, "text": str, "reply" : str, "feedback_state" : str }
 
     Notes:
     - We ORDER BY id to provide predictable results for students learning/testing.
@@ -69,7 +73,7 @@ def get_feedback():
     cur = conn.cursor()
 
     # Execute a SELECT query to retrieve the relevant columns.
-    cur.execute("SELECT id, student_name, text, reply, feedback_status FROM feedback ORDER BY id ASC")
+    cur.execute("SELECT id, student_name, email, text, reply, feedback_status FROM feedback ORDER BY id ASC")
     rows = cur.fetchall()
 
     # Close DB resources to avoid leaking connections.
@@ -78,13 +82,13 @@ def get_feedback():
 
     # Transform DB rows (tuples) into dictionaries for JSON serialization.
     feedback = [
-        {"id": r[0], "student_name": r[1], "text": r[2], "reply": r[3], "feedback_status": r[4]}
+        {"id": r[0], "student_name": r[1], "email": r[2], "text": r[3], "reply": r[4], "feedback_status": r[5]}
         for r in rows
     ]
     return jsonify(feedback), 200
 
 @app.route("/feedback/<int:feedback_id>/reply", methods=["POST"])
-def respond_feedback(feedback_id):
+def reply_feedback(feedback_id):
 
     data = request.get_json() or {}
 
@@ -94,7 +98,7 @@ def respond_feedback(feedback_id):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT reply FROM feedback WHERE id=%s", (feedback_id,))
+    cur.execute("SELECT reply, email, text FROM feedback WHERE id=%s", (feedback_id,))
     row = cur.fetchone()
 
     if not row:
@@ -104,20 +108,30 @@ def respond_feedback(feedback_id):
 
     reply = data["reply"]
 
+
     cur.execute("UPDATE feedback SET reply=%s, feedback_status=%s WHERE id=%s", (reply, 'replied', feedback_id))
     conn.commit()
 
     cur.close()
     conn.close()
 
+
+
+    #### calling email-service ####
+    recipient = row[1]
+    feedback = row[2]
+
+
+    url = f"{EMAIL_API}/email/reply"
+    body = { "reply": reply, "recipient": recipient, "feedback": feedback }
+    #requests.post(url, json=body, timeout=5)
+
     return jsonify({"id": feedback_id, "reply": reply}), 200
 
 
 @app.route("/feedback/<int:feedback_id>", methods=["DELETE"])
-def delete_student(feedback_id):
-    """
-    Delete the student row and return a 200 message or 404 if the row did not exist.
-    """
+def delete_feedback(feedback_id):
+
     conn = get_connection()
     cur = conn.cursor()
 

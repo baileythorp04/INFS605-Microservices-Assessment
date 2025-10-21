@@ -280,7 +280,7 @@ export default function App() {
 
             {f.feedback_status == 'replied' &&
             <div>
-              <div style={{ textDecoration: 'underline', color: '#212121', 'margin-top':'12px' }}>Reply:</div>
+              <div style={{ textDecoration: 'underline', color: '#212121', 'marginTop':'12px' }}>Reply:</div>
               <div style={{ color: '#616161' }}>{f.reply}</div>
             </div>}
           </div>

@@ -97,8 +97,11 @@ services:
     container_name: email-service
     environment:
       FLASK_ENV: development
+      EMAIL_OUT_DIR: /out
     ports:
       - "5004:5004"
+    volumes:
+      - ./email-service/sent_emails:/out
     networks:
       - microservices-net
 

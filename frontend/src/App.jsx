@@ -19,6 +19,13 @@ export default function App() {
 
   /* Course variables */
   const [courses, setCourses] = useState([])
+  const [courseName, setCourseName] = useState('')
+  const [code, setCode] = useState('')
+  const [year, setYear] = useState('')
+  const [description, setDescription] = useState('')
+
+  const [yearFilter, setYearFilter] = useState('')
+
   const [catalogOpen, setCatalogOpen] = useState(false)
 
   /* Feedback variables */
@@ -98,8 +105,24 @@ export default function App() {
       .then(r => r.json())
       .then(setCourses)
   }
+  
+  const addCourse = async () => {
+    if (!courseName || !year || !code || !description) return
+    const res = await fetch(`${CATALOG_API}/courses`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ "name": courseName, "code": code, "year": year, "description": description})
+    })
+    if (res.ok) {
+      setCourseName(''), setYear(''), setCode(''), setDescription('')
+      fetchCourses()
+    }
+  }
 
   useEffect(() => { fetchCourses() }, [])
+
+  const filteredCourses = useMemo(() => courses.filter(c =>
+    c.year == yearFilter || yearFilter == ''), [courses, yearFilter])
 
 
 
@@ -145,8 +168,10 @@ export default function App() {
     }
   }
 
+  
+
   const newFeedback = useMemo(() => feedback.filter(f =>
-    f.feedback_status == 'open'), [feedback])
+    ['open'].includes(f.feedback_status)), [feedback])
   const oldFeedback = useMemo(() => feedback.filter(f =>
     ['replied', 'resolved'].includes(f.feedback_status)), [feedback])
 
@@ -222,9 +247,8 @@ export default function App() {
       </div>}
 
 
+      {/* === Course catalog dropdown === */}
 
-
-      {/* === Course List Section === */}
       <div className='horizontal-container'>
         <h2>Course Catalog ({courses.length} courses)</h2>
       <div className="justify-end">
@@ -234,7 +258,39 @@ export default function App() {
       </div>
       </div>
       {catalogOpen && <div className="grid-gap">
-        {courses.map(c => (
+
+      {/* === Add Course + year search === */}
+      <section className="grid-3-1">
+        <div className="card">
+          <h2>Add Course</h2>
+          <input placeholder="Course Name" value={courseName} onChange={e=>setCourseName(e.target.value)} />
+          <input placeholder="Course Code (e.g. INFS605)" value={code} onChange={e=>setCode(e.target.value)} />
+          <input placeholder="Description" value={description} onChange={e=>setDescription(e.target.value)} />
+          <select value={year} onChange={e=>setYear(e.target.value)}>
+            <option value=""></option>
+            <option value={1}>Year 1</option>
+            <option value={2}>Year 2</option>
+            <option value={3}>Year 3</option>
+            <option value={4}>Year 4</option>
+          </select>
+          <button style={{marginLeft:"12px"}}className="btn-primary" onClick={addCourse}>Create Course</button>
+        </div>
+
+        <div className="card">
+          <h2>Filter by year</h2>
+          <select value={yearFilter} onChange={e=>setYearFilter(e.target.value)}>
+            <option value=""></option>
+            <option value={1}>Year 1</option>
+            <option value={2}>Year 2</option>
+            <option value={3}>Year 3</option>
+            <option value={4}>Year 4</option>
+          </select>
+        </div>
+      </section>
+
+      {/* === Course List Section === */}
+
+        {filteredCourses.map(c => (
           <div key={c.id} className="grid-row">
             <div>
               <div style={{ fontWeight: 'bold', color: '#212121' }}>{c.name}</div>
@@ -266,7 +322,7 @@ export default function App() {
           <p>Please provide your email address so you may be alerted if you get a reply.</p>
           <input placeholder="Full name" value={feedbackName} onChange={e=>setFeedbackName(e.target.value)} />
           <input placeholder="Email" value={feedbackEmail} onChange={e=>setFeedbackEmail(e.target.value)} />
-          <textarea style={{width: "320px"}} placeholder="Write feedback here..." value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} />
+          <textarea style={{width: "50%"}} placeholder="Write feedback here..." value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} />
           <button className="btn-primary" onClick={addFeedback}>Submit Feedback</button>
         </div>
 

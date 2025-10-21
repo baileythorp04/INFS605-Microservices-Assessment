@@ -56,6 +56,13 @@ p {
   margin-bottom: 24px;
 }
 
+.grid-3-1 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .grid-gap {
   display: grid;
   gap: 16px;

@@ -59,7 +59,7 @@ def get_courses():
     Query the courses table and return a JSON list of course objects.
 
     Each course object:
-      { "id": int, "name": str, "code": str, "description": str }
+      { "id": int, "name": str, "code": str, "year": int, "description": str }
 
     Notes:
     - We ORDER BY id to provide predictable results for students learning/testing.
@@ -69,7 +69,7 @@ def get_courses():
     cur = conn.cursor()
 
     # Execute a SELECT query to retrieve the relevant columns.
-    cur.execute("SELECT id, name, code, description FROM courses ORDER BY id ASC")
+    cur.execute("SELECT id, name, code, year, description FROM courses ORDER BY id ASC")
     rows = cur.fetchall()
 
     # Close DB resources to avoid leaking connections.
@@ -78,11 +78,42 @@ def get_courses():
 
     # Transform DB rows (tuples) into dictionaries for JSON serialization.
     courses = [
-        {"id": r[0], "name": r[1], "code": r[2], "description": r[3]}
+        {"id": r[0], "name": r[1], "code": r[2], "year": r[3], "description": r[4]}
         for r in rows
     ]
     return jsonify(courses), 200
 
+@app.route("/courses", methods=["POST"])
+def add_course():
+
+    data = request.get_json() or {}
+
+    # Basic validation for required fields.
+    if "name" not in data or "code" not in data or "year" not in data or "description" not in data:
+        return jsonify({"error": "name, code, year, and description are required"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Use parameterized INSERT to safely add the row; attendance starts as an empty JSON array.
+    cur.execute(
+        "INSERT INTO courses (name, code, year, description) VALUES (%s, %s, %s, %s) RETURNING id",
+        (data["name"], data["code"], data["year"], data["description"])
+    )
+    new_id = cur.fetchone()[0]
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    # Return the new resource with HTTP 201 "Created"
+    return jsonify({
+        "id": new_id,
+        "name": data["name"],
+        "code": data["code"],
+        "year": data["year"],
+        "description": data["description"],
+    }), 201
 
 
 # -----------------------------

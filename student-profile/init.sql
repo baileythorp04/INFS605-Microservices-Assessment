@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS students (
 );
 
 INSERT INTO students (name, email, attendance) VALUES
-('Read from student-profile', 'aroha.ngata@example.com', '[]'),
 ('Tane Mahuta', 'tane.mahuta@example.com', '[]'),
 ('Moana Rangi', 'moana.rangi@example.com', '[]'),
 ('Wiremu Pita', 'wiremu.pita@example.com', '[]'),

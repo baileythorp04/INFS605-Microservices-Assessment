@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS feedback (
 );
 
 INSERT INTO feedback (student_name, email, text) VALUES
-('John', 'John@email.com', 'I love this'),
-('John2', 'John2@email.com', 'I like this'),
-('John3', 'John3@email.com', 'I dislike this'),
-('John4', 'John4@email.com', 'I hate this');
+('John', 'John@email.com', 'I love this microservices architected website'),
+('Joan', 'Joan@email.com', 'I like this microservices architected website'),
+('Johnny', 'Johnny@email.com', 'I dislike this microservices architected website'),
+('Jean', 'Jean@email.com', 'I hate this microservices architected website');

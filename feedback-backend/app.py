@@ -87,6 +87,39 @@ def get_feedback():
     ]
     return jsonify(feedback), 200
 
+
+@app.route("/feedback", methods=["POST"])
+def create_feedback():
+
+    data = request.get_json() or {}
+
+    # Basic validation for required fields.
+    if "name" not in data or "email" not in data or "text" not in data:
+        return jsonify({"error": "name, email and text are required"}), 400
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Use parameterized INSERT to safely add the row
+    cur.execute(
+        "INSERT INTO feedback (student_name, email, text) VALUES (%s, %s, %s) RETURNING id",
+        (data["name"], data["email"], data["text"])
+    )
+    new_id = cur.fetchone()[0]
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    # Return the new resource with HTTP 201 "Created"
+    return jsonify({
+        "id": new_id,
+        "name": data["name"],
+        "email": data["email"],
+        "text": data["text"]
+    }), 201
+
+
 @app.route("/feedback/<int:feedback_id>/reply", methods=["POST"])
 def reply_feedback(feedback_id):
 

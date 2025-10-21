@@ -23,6 +23,9 @@ export default function App() {
 
   /* Feedback variables */
   const [feedback, setFeedback] = useState([])
+  const [feedbackName, setFeedbackName] = useState('')
+  const [feedbackEmail, setFeedbackEmail] = useState('')
+  const [feedbackText, setFeedbackText] = useState('')
 
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
@@ -96,10 +99,9 @@ export default function App() {
       .then(setCourses)
   }
 
-  
-  
-
   useEffect(() => { fetchCourses() }, [])
+
+
 
   /* #### Feedback API Access #### */
 
@@ -109,6 +111,19 @@ export default function App() {
     fetch(`${FEEDBACK_API}/feedback`)
       .then(r => r.json())
       .then(setFeedback)
+  }
+
+  const addFeedback = async () => {
+    if (!feedbackName || !feedbackEmail || !feedbackText) return
+    const res = await fetch(`${FEEDBACK_API}/feedback`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name: feedbackName, email: feedbackEmail, text: feedbackText })
+    })
+    if (res.ok) {
+      setFeedbackName(''); setFeedbackEmail(''); setFeedbackText('')
+      fetchFeedback()
+    }
   }
 
   const deleteFeedback = async (id) => {
@@ -145,7 +160,18 @@ export default function App() {
       <h1>Admin Portal</h1>
       <p>Manage students, attendance, courses, and feedback.</p>
 
-      {/* === Add Student + Search Section === */}
+      
+
+      {/* === Student List Section === */}
+      <div className='horizontal-container'>
+        <h2>Students ({filteredStudents.length})</h2>
+        <button onClick={toggleStudentCollapse}>
+          {studentsOpen ? 'Λ' : 'V'}
+        </button>
+      </div>
+      {studentsOpen && <div className="grid-gap">
+
+        {/* === Add Student + Search Section === */}
       <section className="grid-2">
         <div className="card">
           <h2>Add Student</h2>
@@ -160,14 +186,8 @@ export default function App() {
         </div>
       </section>
 
-      {/* === Student List Section === */}
-      <div className='horizontal-container'>
-        <h2>Students ({filteredStudents.length})</h2>
-        <button onClick={toggleStudentCollapse}>
-          {studentsOpen ? 'Λ' : 'V'}
-        </button>
-      </div>
-      {studentsOpen && <div className="grid-gap">
+        {/* === Student List Section === */}
+
         {filteredStudents.map(s => (
           <div key={s.id} className="grid-row">
             <div>
@@ -232,12 +252,25 @@ export default function App() {
 
     {/* === Feedback List Section === */}
       <div className='horizontal-container'>
-        <h2>Feedback List ({feedback.length})</h2>
+        <h2>Feedback ({feedback.length})</h2>
         <button onClick={toggleFeedbackCollapse}>
           {feedbackOpen ? 'Λ' : 'V'}
         </button>
       </div>
       {feedbackOpen && <div className="grid-gap">
+
+
+        {/* === Add Feedback === */}
+        <div className="card">
+          <h2>Give Feedback</h2>
+          <p>Please provide your email address so you may be alerted if you get a reply.</p>
+          <input placeholder="Full name" value={feedbackName} onChange={e=>setFeedbackName(e.target.value)} />
+          <input placeholder="Email" value={feedbackEmail} onChange={e=>setFeedbackEmail(e.target.value)} />
+          <textarea style={{width: "320px"}} placeholder="Write feedback here..." value={feedbackText} onChange={e=>setFeedbackText(e.target.value)} />
+          <button className="btn-primary" onClick={addFeedback}>Submit Feedback</button>
+        </div>
+
+        {/* === Feedback Lists === */}
 
         <h3>Open Feedback ({newFeedback.length}):</h3>
         {newFeedback.map(f => (
